@@ -13,7 +13,7 @@ def generate_adashe_ledger(customer_data, year, month, filename="Adashe_ledger.x
     """
     
     _, total_days = calendar.monthrange(year, month)
-    month_name = calendar.month_name(month)
+    month_name = calendar.month_name[month]
 
     processed_records = []
 
@@ -37,13 +37,14 @@ def generate_adashe_ledger(customer_data, year, month, filename="Adashe_ledger.x
         })
 
         excel_format = pd.DataFrame(processed_records)
-        excel_title = f"Adashe_{month_name}_year"
+        excel_title = f"Adashe_{month_name}_{year}"
 
         with pd.ExcelWriter(filename, engine='openpyxl') as writer:
-            df.to_excel(writer, sheet_name=sheet_title, index=False)
+            excel_format.to_excel(writer, sheet_name=excel_title[:31], index=False)
 
-            print(f"saved ledger to '{filename}' under sheet '{sheet_name}'")
+            print(f"saved ledger to '{filename}' under sheet '{excel_title[:31]}'")
             
 
 
-
+customer_data_object = pd.read_csv("customers.csv").to_dict(orient="records")
+generate_adashe_ledger(customer_data_object, 2026, 9)
