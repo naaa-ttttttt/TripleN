@@ -45,6 +45,18 @@ def generate_adashe_ledger(customer_data, year, month, filename="Adashe_ledger.x
             print(f"saved ledger to '{filename}' under sheet '{excel_title[:31]}'")
             
 
+def process_all_workers(worker_files, year, month):
+    for worker_name, csv_path in worker_files.items():
+        customer_data = pd.read_csv(csv_path).to_dict(orient="records")
+        output_filename = f"{worker_name}_ledger_{month}_{year}.xlsx"
+        generate_adashe_ledger(customer_data, year, month, filename=output_filename)
+        print(f"Done: {worker_name} -> {output_filename}")
 
-customer_data_object = pd.read_csv("customers.csv").to_dict(orient="records")
-generate_adashe_ledger(customer_data_object, 2026, 9)
+ 
+
+worker_files = {
+    "mary": "mary.csv",
+    "grace": "grace.csv",
+}
+
+process_all_workers(worker_files, 2026, 9)
