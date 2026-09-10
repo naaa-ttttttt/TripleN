@@ -25,7 +25,6 @@ def generate_adashe_ledger(customer_data, year, month, filename="Adashe_ledger.x
         organizer_earnings = daily_rate
         customer_payout = total_collected - organizer_earnings
 
-
         processed_records.append({
             "Customer Name": name,
             "Daily rate (₦)": daily_rate,
@@ -39,11 +38,17 @@ def generate_adashe_ledger(customer_data, year, month, filename="Adashe_ledger.x
         excel_format = pd.DataFrame(processed_records)
         excel_title = f"Adashe_{month_name}_{year}"
 
+        company_total_earnings = excel_format["Company's Earnings (₦)"].sum()
+
         with pd.ExcelWriter(filename, engine='openpyxl') as writer:
             excel_format.to_excel(writer, sheet_name=excel_title[:31], index=False)
 
-            print(f"saved ledger to '{filename}' under sheet '{excel_title[:31]}'")
-            
+            worksheet = writer.sheets[excel_title[:31]]
+            last_row = len(excel_format) + 2  # +1 for header, +1 for next empty row
+            worksheet.cell(row=last_row, column=5, value="Total")
+            worksheet.cell(row=last_row, column=5, value=company_total_earnings)
+
+            print(f"saved ledger to '{filename}' under sheet '{excel_title[:31]}'")            
 
 def process_all_workers(worker_files, year, month):
     for worker_name, csv_path in worker_files.items():
